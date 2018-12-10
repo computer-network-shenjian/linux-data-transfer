@@ -25,3 +25,12 @@
 
 #include "Log.h"
 
+
+// This function generates an array of random 
+// example usage
+// int main() {
+//     uint8_t data[16];
+//     generate_init_vector(data);
+// }
+template<std::size_t N>
+void generate_init_vector(uint8_t (&IV_buff)[N]);
