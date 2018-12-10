@@ -1,7 +1,7 @@
 const string fn_physical_layer = "physical_layer.dat";
 
 // Note: Enumerators should be named like constants. See Google C++ Style Guide for detail
-enum CopyMode {
+enum class CopyMode {
     kCopy,
     kShared,
 };
@@ -19,13 +19,25 @@ enum CopyMode {
 //
 // the position of the first byte in a packet of each field
 // note: the range is left-closed and right-open
-enum FramePos {
-    kMacHeaderPos = 0,
-    kIpHeaderPos = 14,
-    kTcpHeaderPos = 34,
-    kPayloadPos = 54,
-    kPacketEndPos = 1514,
+enum class PacketFieldPos : unsigned int {
+    MacHeader = 0,
+    IpHeader = 14,
+    TcpHeader = 34,
+    Payload = 54,
+    PacketEnd = 1514,
 };
 
+// error codes
+enum class ErrorCode : int {
+    OK = 0;
+    OpenFile = -1,
+    SharedMemoryAllocation = -2,
+    SharedMemoryAttachment = -3,
+}
 
-
+// Simply use SIGUSR1 to indicate shared memory ready
+// and SIGUSR2 to indicate it's ok to exit the process
+//
+// enum class CustomSignal : int {
+// 
+// }

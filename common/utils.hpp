@@ -25,6 +25,12 @@
 
 #include "Log.h"
 
+// A macro that gracefully return by first calling perror to
+// display a decent error message with error string s,
+// then exit with error code x.
+#define GRACEFUL_RETURN(s, x) {\
+    perror((s));\
+    return((x)); }
 
 // This function generates an array of random 
 // example usage
@@ -34,3 +40,16 @@
 // }
 template<std::size_t N>
 void generate_init_vector(uint8_t (&IV_buff)[N]);
+
+// Initialize a process right after entring a function of a layer
+// The initialization is a x stage process:
+// 1. Register death of child when parent dies
+// 2. Attach shared memory and return its address
+// 3. register proper signal handlers
+char* process_init(int segment_id);
+
+// Allocate a shared memory segment, returning sengment_id
+int allocate_shared_memory(int shared_segment_size);
+
+// Deallocate the shared memory segment specified by segment_id
+int deallocate_shared_memory(int segment_id);

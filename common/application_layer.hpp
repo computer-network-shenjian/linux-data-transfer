@@ -5,8 +5,16 @@
 //
 // The shared memory to be attached is assumed to be big enough
 //
-// Implementation note: the shared memory can be attached by
-//      char *shared_memory = (char*) shmat (segment_id, 0, 0);
-// 
-// This functions is the same for both copy and shared modes.
-int sender_application_layer(int segment_id);
+// The implementation of this layer is the same for both copy and shared modes.
+int sender_application_layer(int lower_layer_pid, int segment_id);
+
+// The signal handler of the application layer handles two signals:
+//  1. SIGUSR1
+//      SIGUSR1 is ignored because there is no upper layers so no need to know the shared
+//      memory is ready.
+//  2. SIGUSR2
+//      Set the flag_ready_to_exit global variable to true, so the 
+//      main function can safely return from the busy-wait loop
+//      
+bool flag_ready_to_exit = false;
+void signal_handler(int sig);
