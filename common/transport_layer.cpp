@@ -3,60 +3,83 @@
 using namespace std;
 
 int sender_transport_layer(int lower_layer_pid, int segment_id, CopyMode copy_mode) {
+    former_not_ready = true;
     // initialize process
     char *shared_memory = process_init(segment_id);
     if (shared_memory == (char*) -1) { // shared memory allocation error
         GRACEFUL_RETURN("Shared memory attachment\n", ErrorCode::SharedMemoryAttachment);
     }
 
-    // generate random data
-    // the length of the payload is 1460
-    uint8_t random_data[payload_length];
-    generate_init_vector(random_data); // populate with random data
-
-    // write to the payload field of the shared memory segement 
-    memcpy(shared_memory[PacketFieldPos::Payload], random_data, rand() % payload_length + 1);
-    // write payload to file
-    write_bytes_to_file(fn_sender, random_data, PacketFieldPos::PacketEnd);
-
-    // send a signal to transport layer (lower layer) when the shared memory is ready
-    kill(lower_layer_pid, SIGUSR1);
-
-    // wait for signal to die
-    // TODO(twofyw): find a better way to eliminate the exit delay with 
-    // proper stack rewinding
-    return ErrorCode::OK;
-}
-
-int receiver_transport_layer(int higher_layer_pid, int segment_id, CopyMode copy_mode) {
-    // initialize process
-    char *shared_memory = process_init(segment_id);
-    if (shared_memory == (char*) -1) { // shared memory allocation error
-        GRACEFUL_RETURN("Shared memory attachment\n", ErrorCode::SharedMemoryAttachment);
+    // wait for SIGUSR1
+    while(former_not_ready) {
+        usleep(100);
     }
 
-    // unpack payload
-    uint8_t ptr_payload;
+    // generate TCP data
+    uint8_t *ptr_tcp_header;
     switch (copy_mode) {
         case CopyMode::copy:
-            ptr_payload = new uint8_t[payload_length];
-            memcpy(ptr_payload, shared_memory + PacketFieldPos::Payload, payload_length);
+            ptr_tcp_header = new uint8_t[kTcpHeaderCopyLength];
+            memcpy(ptr_tcp_header[kTcpHeaderLength], shared_memory[PacketFieldPos::Payload], kPayloadLength);
             break;
         case CopyMode::shared:
-            ptr_payload = shared_memory + PacketFieldPos::Payload;
+            ptr_tcp_header = shared_memory + PacketFieldPos::TcpHeader
             break;
         default:
             LOG(Error) << "Wrong copy mode"
             return ErrorCode::WrongCopyMode;
     }
+    generate_tcp_header(ptr_tcp_header); // populate with tcp header
 
-    // write to file
-    write_bytes_to_file(fn_receiver, random_data, PacketFieldPos::PacketEnd);
+    // write to the TCP header field of the shared memory segment
+    memcpy(shared_memory[PacketFieldPos::TcpHeader], ptr_tcp_header, kTcpHeaderLength);
 
+    // send a signal to network layer (lower layer) when the shared memory is ready
+    kill(lower_layer_pid, SIGUSR1);
 
     // release new
     if (copy_mode == CopyMode::copy) {
-        delete[] ptr_payload;
+        delete[] ptr_tcp_header;
+    }
+
+    return ErrorCode::OK;
+}
+
+int receiver_transport_layer(int higher_layer_pid, int segment_id, CopyMode copy_mode) {
+    former_not_ready = true;
+    // initialize process
+    char *shared_memory = process_init(segment_id);
+    if (shared_memory == (char*) -1) { // shared memory allocation error
+        GRACEFUL_RETURN("Shared memory attachment\n", ErrorCode::SharedMemoryAttachment);
+    }
+
+    // wait for SIGUSR1
+    while(former_not_ready) {
+        usleep(100);
+    }
+
+    // parse TCP data
+    uint8_t *ptr_tcp_header;
+    switch (copy_mode) {
+        case CopyMode::copy:
+            ptr_tcp_header = new uint8_t[kTcpHeaderCopyLength];
+            memcpy(ptr_tcp_header, shared_memory[PacketFieldPos::TcpHeader], kTcpHeaderCopyLength);
+            break;
+        case CopyMode::shared:
+            ptr_tcp_header = shared_memory + PacketFieldPos::TcpHeader
+            break;
+        default:
+            LOG(Error) << "Wrong copy mode"
+            return ErrorCode::WrongCopyMode;
+    }
+    parse_tcp_header(ptr_tcp_header); // populate with tcp header
+    
+    // send a signal to application layer (upper layer) when the shared memory is ready
+    kill(getppid(), SIGUSR1);
+
+    // release new
+    if (copy_mode == CopyMode::copy) {
+        delete[] ptr_tcp_header;
     }
 
     return ErrorCode::OK;
@@ -65,10 +88,36 @@ int receiver_transport_layer(int higher_layer_pid, int segment_id, CopyMode copy
 void signal_handler(int sig) {
     switch (sig) {
         case SIGUSR1:
-            LOG(Info) << "[5] SIGUSR1 ignored.\n";
+            former_not_ready = false;
+            LOG(Info) << "[4] SIGUSR1 get, former layer is ready.\n";
             break;
         default:
-            LOG(Info) << "[5] Unknown signal received.\n";
+            LOG(Error) << "[4] Unknown signal received.\n";
             break;
     }
+}
+
+void generate_tcp_header(uint8_t *ptr_tcp_header) {
+    // Initialize TCP pseudo header.
+    PseudoHeaderTcp pseudo = {kSourceAddr, kDestAddr, 0, Protocol::TCP, 0};
+
+    // Initialize TCP header.
+    HeaderTcp header = {kTcpSourcePort, kTcpDestPort, 0, 0, 0x5000, 0, 0, 0};
+
+    // Calculate check_sum.
+    header.check_sum = check_sum_calc(ptr_tcp_header);
+}
+
+void parse_tcp_header(uint8_t *ptr_tcp_header);
+
+void tcp_header_printer(const HeaderTcp header) {
+    cout << endl << "TCP header info: " << endl;
+    cout << "source port: \t" << header.source_port << endl;
+    cout << "destination port: \t" << header.dest_port << endl;
+    cout << "seq number: \t" << header.seq << endl;
+    cout << "ack number: \t" << header.ack << endl;
+    cout << "data offset and flags: \t" << hex << header.data_offset_and_flags << endl;
+    cout << "window size:\t" << dec << header.window_size << endl;
+    cout << "check sum:\t" << header.check_sum << endl;
+    cout << "urgent pointer:\t" << header.urgent_pointer << endl;
 }

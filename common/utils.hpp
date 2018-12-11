@@ -5,6 +5,7 @@
 #include <functional>
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -60,3 +61,8 @@ int deallocate_shared_memory(int segment_id);
 // write num_bytes many bytes pointed by ptr_bytes to file fn
 void write_bytes_to_file(string fn, uint8_t *ptr_bytes, int num_bytes);
 
+// calculate check_sum with given pointer
+uint16_t check_sum_calc(uint8_t *ptr_header, const int header_type);
+
+// check whether check_sum is valid, if so, return true, else false
+bool check_sum_inspect(uint8_t *ptr_header, const uint16_t check_sum, const int header_type);

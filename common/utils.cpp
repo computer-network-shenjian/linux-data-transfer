@@ -49,3 +49,31 @@ ErrorCode log_init(std::ofstream &log_stream, const std::string log_name, const 
     Log::get().setLevel(level);
     return ErrorCode::OK;
 }
+
+uint16_t check_sum_calc(uint8_t *ptr_header, const int header_type) {
+    switch (header_type) {
+        case HeaderType::TCP:
+            // do things.
+            break;
+        case HeaderType::IP:
+            // do things.
+            break;
+        default:
+            LOG(Error) << "Wrong header type"
+            return ErrorCode::WrongHeaderType;
+    }
+}
+
+bool check_sum_inspect(uint8_t *ptr_header, const uint16_t check_sum, const int header_type) {
+    switch (header_type) {
+        case HeaderType::TCP:
+            // do things.
+            break;
+        case HeaderType::IP:
+            // do things.
+            break;
+        default:
+            LOG(Error) << "Wrong header type"
+            return ErrorCode::WrongHeaderType;
+    }
+}
