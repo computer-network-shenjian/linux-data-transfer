@@ -14,7 +14,7 @@ int sender_application_layer(int lower_layer_pid, int segment_id);
 // The receiver side application layer
 // Unpack payload from higher layer from shared memory and write to file fn_receiver
 // The payload is located at position 
-int receiver_application_layer(int higher_layer_pid, int segment_id);
+int receiver_application_layer(int higher_layer_pid, int segment_id, CopyMode copy_mode);
 
 // The signal handler of the application layer handles two signals:
 //  1. SIGUSR1
