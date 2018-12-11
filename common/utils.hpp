@@ -33,7 +33,10 @@
     return((x)); }
 
 // This function generates an array of random 
-// example usage
+// uint8_t documents the intent: will be storing small numbers, 
+// rather than characters
+//
+// Example usage:
 // int main() {
 //     uint8_t data[16];
 //     generate_init_vector(data);
@@ -48,8 +51,12 @@ void generate_init_vector(uint8_t (&IV_buff)[N]);
 // 3. register proper signal handlers
 char* process_init(int segment_id);
 
-// Allocate a shared memory segment, returning sengment_id
+// Allocate and zero-initialize a shared memory segment, returning sengment_id
 int allocate_shared_memory(int shared_segment_size);
 
 // Deallocate the shared memory segment specified by segment_id
 int deallocate_shared_memory(int segment_id);
+
+// write num_bytes many bytes pointed by ptr_bytes to file fn
+void write_bytes_to_file(string fn, uint8_t *ptr_bytes, int num_bytes);
+

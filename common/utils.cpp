@@ -16,10 +16,9 @@ char* process_init(int segment_id) {
     // 2. Attach shared memory specified by segment_id and return its address
     char *shared_memory = (char*) shmat(segment_id, nullptr, 0);
 
-    // 3. register proper signal handlers
-    // SIGUSR1 and SIGUSR2 are all we need for this project
+    // 3. register a proper signal handler
+    // SIGUSR1 is all we need for this project
     signal(SIGUSR1, signal_handler);
-    signal(SIGUSR2, signal_handler);
 
     return shared_memory;
 }
@@ -31,4 +30,22 @@ int allocate_shared_memory(int shared_segment_size) {
 
 int deallocate_shared_memory(int segment_id) {
     return shmctl (segment_id, IPC_RMID, 0);
+}
+
+void write_bytes_to_file(string fn, uint8_t *ptr_bytes, int num_bytes) {
+    ofstream ofile(fn, ios::binary);
+    ofile.write(ptr_bytes, num_bytes);
+    ofile.close();
+}
+
+ErrorCode log_init(std::ofstream &log_stream, const std::string log_name, const Level level) {
+    // log_stream must not be opened before calling this function.
+    if (log_stream.is_open()) return ErrorCode::LogInit;
+
+    log_stream.open(log_name, ios::out|ios::trunc);
+    if (!log_stream.is_open()) return ErrorCode::LogInit;
+
+    Log::get().setLogStream(log_stream);
+    Log::get().setLevel(level);
+    return ErrorCode::OK;
 }

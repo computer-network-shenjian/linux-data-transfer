@@ -1,12 +1,20 @@
 #include "utils.hpp"
 
+const std::string fn_sender = "fn_sender.dat";
+const std::string fn_receiver = "fn_receiver.dat";
+
 // This function generates random data of of length between 1-1460 bytes
-// and write to shared memory at [kPayloadPos, kPacketEndPos).
+// and write to both file fn_sender and shared memory at position [PacketFieldPos::Payload, PacketFieldPos::PacketEnd).
 //
-// The shared memory to be attached is assumed to be big enough
+// The shared memory to be attached and written to is assumed to be big enough
 //
 // The implementation of this layer is the same for both copy and shared modes.
 int sender_application_layer(int lower_layer_pid, int segment_id);
+
+// The receiver side application layer
+// Unpack payload from higher layer from shared memory and write to file fn_receiver
+// The payload is located at position 
+int receiver_application_layer(int higher_layer_pid, int segment_id);
 
 // The signal handler of the application layer handles two signals:
 //  1. SIGUSR1
