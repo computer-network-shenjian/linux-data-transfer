@@ -55,29 +55,9 @@ enum class HeaderType : int {
     IP = 1
 };
 
-// structs
-struct HeaderTcp {
-    uint16_t source_port;
-    uint16_t dest_port;
-    uint32_t seq;
-    uint32_t ack;
-    uint16_t data_offset_and_flags;
-    uint16_t window_size;
-    uint16_t check_sum;
-    uint16_t urgent_pointer;
-};
-
-struct PseudoHeaderTcp {
-    uint32_t source_addr;
-    uint32_t dest_addr;
-    uint8_t zeros;
-    uint8_t protocol;
-    uint16_t tcp_length;
-}
-
 // other constants
 const string fn_physical_layer = "physical_layer.dat";
-const uint16_t kTcpSourcePort = 12345;
-const uint16_t kTcpDestPort = 6789;
-const uint32_t kSourceAddr = 0;
-const uint32_t kDestAddr = 0;
+//const uint16_t kTcpSourcePort = 12345;
+//const uint16_t kTcpDestPort = 6789;
+//const uint32_t kSourceAddr = 0;
+//const uint32_t kDestAddr = 0;
