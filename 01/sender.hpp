@@ -1,3 +1,3 @@
 #include "../common/layers.hpp"
 
-const CopyMode kCopyMode = CopyMode::Shared;
+const CopyMode kCopyMode = CopyMode::Copy;

@@ -19,6 +19,7 @@ receiver: receiver.cpp $(OBJ_LIB)
 
 clean:
 	$(RM) sender receiver
+	$(RM) *.dat
 	$(RM) ../common/*.o
 
 .PHONY : all test clean

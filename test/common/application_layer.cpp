@@ -2,7 +2,6 @@
 
 using namespace std;
 
-/*
 int sender_application_layer(int lower_layer_pid, int segment_id) {
     // initialize process
     char *shared_memory = process_init(segment_id);
@@ -28,7 +27,6 @@ int sender_application_layer(int lower_layer_pid, int segment_id) {
     // proper stack rewinding
     return ErrorCode::OK;
 }
-*/
 
 int receiver_application_layer(int higher_layer_pid, int segment_id, CopyMode copy_mode) {
     // initialize process

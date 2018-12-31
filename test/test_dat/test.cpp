@@ -3,25 +3,25 @@ using namespace std;
 
 int main() {
     unsigned int buflen = 20;
-    unsigned char *buf = new unsigned char[20];
-    buf[0] = 'h';
-    buf[1] = 'e';
-    buf[2] = 'l';
-    buf[3] = 'l';
-    buf[4] = 'o';
-    write_dat(buf, buflen, kRawDat);
-    delete[] buf;
+    unsigned char *buf1 = new unsigned char[20];
+    buf1[0] = 'h';
+    buf1[1] = 'e';
+    buf1[2] = 'l';
+    buf1[3] = 'l';
+    buf1[4] = 'o';
+    write_dat(buf1, buflen, kRawDat);
+    delete[] buf1;
 
-    buf = new unsigned char[20];
+    char *buf = new char[20];
     cout << "dat length: " << read_dat(buf, kRawDat) << endl;
     cout << buf << endl;
     delete[] buf;
 
-    buf = new unsigned char[1024];
+    buf = new char[1024];
     buflen = read_dat(buf, kReadDat);
     cout << "dat length: " << buflen << endl;
 
-    write_dat(buf, buflen, kRawDat);
+    //write_dat(buf, buflen, kRawDat);
 
     delete[] buf;
 
@@ -45,7 +45,7 @@ bool write_dat(const unsigned char *buf, const unsigned int buflen, const char *
     return true;
 }
 
-int read_dat(unsigned char *buf, const char *dat_name) {
+int read_dat(char *buf, const char *dat_name) {
     ifstream ifs(dat_name);
     if (!ifs.is_open()) {
         cerr << "read_dat(): open file error" << endl;
@@ -69,7 +69,9 @@ int read_dat(unsigned char *buf, const char *dat_name) {
         ss << b;
         unsigned int a;
         ss >> hex >> a;
-        buf[cnt] = a;
+        unsigned char c = a;
+        memcpy(buf + cnt, &c, 1);
+        //buf[cnt] = a;
         cnt++;
     }
 

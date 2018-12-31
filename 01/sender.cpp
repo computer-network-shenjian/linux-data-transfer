@@ -2,13 +2,15 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
+int main() {
     /*
     int segment_id = allocate_shared_memory(PacketFieldPos::PacketEnd);
     if (segment_id == -1) { // shared memory allocation error
         GRACEFUL_RETURN("Shared memory allocation\n", ErrorCode::SharedMemoryAllocation);
     }
     */
+    
+    signal(SIGCHLD, SIG_IGN);
 
     // continuously fork subprocesses
     pid_t pid = fork();
