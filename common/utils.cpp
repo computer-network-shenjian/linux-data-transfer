@@ -273,10 +273,10 @@ void print_tcp_data(const char *buf, const int len) {
 uint16_t checksum_TCP_sender(const char *buf, const int buflen, const PseudoHeaderTCP pseudo) {
     uint32_t sum = 0;
     uint16_t *u_buf = new uint16_t[kMaxPacketLen];
-    memset(u_buf, 0, kMaxPacketLen);
+    memset(u_buf, 0, kMaxPacketLen*2);
 
     memcpy(u_buf, &pseudo, kTcpPseudoLength);
-    memcpy(u_buf+kTcpPseudoLength, buf, buflen);
+    memcpy(u_buf+kTcpPseudoLength/2, buf, buflen);
 
     for (int i = 0; i < int(kMaxPacketLen); i++){
         sum += htons(u_buf[i]);

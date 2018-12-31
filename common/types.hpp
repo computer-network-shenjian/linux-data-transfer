@@ -55,7 +55,7 @@ struct HeaderTCP {
     uint32_t seq = rand() % 2147483648;   // 4 bytes, 0~2^31-1
     uint32_t ack = rand() % 2147483648;   // 4 bytes, 0~2^31-1
     // [data offset, 4 bit][all zeros, 3 bit][flags, 9 bit]
-    uint16_t data_offset_and_flags = htons(0x5010);     // 2 bytes
+    uint16_t data_offset_and_flags = htons(0x9010);     // 2 bytes
     uint16_t window_size = rand() % 65536;   // 2 bytes, 0~65535
     uint16_t tcp_check_sum = 0;     // 2 bytes
     uint16_t urgent_pointer = 0;    // 2 bytes

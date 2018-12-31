@@ -31,7 +31,7 @@ int sender_application_layer(const int pid, const int segment_id) {
     }
 
     int data_len = 20;
-    int tcp_len = 4 * 5;
+    int tcp_len = 9 * 4;
 
     char *buf = new char[data_len];
     generate_init_vector(buf, data_len);
@@ -164,7 +164,7 @@ int sender_transport_layer(const int pid, const int segment_id, const CopyMode c
 
     // do parse work
     int data_len = 20;
-    int tcp_len = 4 * 5;
+    int tcp_len = 9 * 4;
 
     HeaderTCP header;
 
@@ -184,7 +184,7 @@ int sender_transport_layer(const int pid, const int segment_id, const CopyMode c
     }
 
     PseudoHeaderTCP pseudo;
-    pseudo.tcp_length = data_len + tcp_len;
+    pseudo.tcp_length = htons(data_len + tcp_len);
     memcpy(ptr_header, &header, tcp_len);
     uint16_t cksum = checksum_TCP_sender(ptr_header, data_len + tcp_len, pseudo);
     header.tcp_check_sum = htons(cksum);
@@ -333,7 +333,7 @@ int sender_network_layer(const int pid, const int segment_id, const CopyMode cop
 
     // do parse work
     int data_len = 20;
-    int tcp_len = 4 * 5;
+    int tcp_len = 9 * 4;
 
     char *ptr_header;
     switch (copy_mode) {
@@ -351,6 +351,7 @@ int sender_network_layer(const int pid, const int segment_id, const CopyMode cop
     }
 
     HeaderIP header;
+    header.packet_length = htons(data_len+tcp_len+kIpLength);
     uint16_t cksum = checksum_IP(header);
     header.ip_check_sum = htons(cksum);
     print_header_IP(header);
@@ -494,7 +495,7 @@ int sender_datalink_layer(const int pid, const int segment_id, const CopyMode co
 
     // do parse work
     int data_len = 20;
-    int tcp_len = 4 * 5;
+    int tcp_len = 9 * 4;
 
     char *ptr_header;
     switch (copy_mode) {
@@ -651,7 +652,7 @@ int sender_physical_layer(const int segment_id, const CopyMode copy_mode) {
 
     // do parse work
     int data_len = 20;
-    int tcp_len = 4 * 5;
+    int tcp_len = 9 * 4;
 
     char *ptr_header;
     switch (copy_mode) {
