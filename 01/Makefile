@@ -6,16 +6,16 @@ OBJ_LIB := $(SRC_LIB:.cpp=.o)
 
 RM := rm -f
 
-all: sender receiver
-
-sender: sender.cpp $(SRC_LIB) $(HEADER_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-receiver: receiver.cpp $(SRC_LIB) $(HEADER_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+all: $(OBJ_LIB) sender receiver $(HEADER_LIB)
 
 %.o: %.cpp $(HEADER_LIB)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+sender: sender.cpp $(OBJ_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+receiver: receiver.cpp $(OBJ_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
 	$(RM) sender receiver
