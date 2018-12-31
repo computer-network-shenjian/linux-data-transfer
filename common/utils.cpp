@@ -2,13 +2,11 @@
 
 using namespace std;
 
-template<std::size_t N>
-void generate_init_vector(uint8_t (&IV_buff)[N]) {
-    using bytes_randomizer = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, uint8_t>;
-    std::default_random_engine rd;
-    bytes_randomizer bytes(rd);
-
-    std::generate(std::begin(IV_buff), std::end(IV_buff), std::ref(bytes));
+void generate_init_vector(char *buf, const int len) {
+    for (int i = 0; i < len; i++) {
+        unsigned char c = rand() % 256;
+        memcpy(buf+i, &c, 1);
+    }
 }
 
 char* process_init(int segment_id) {
@@ -270,4 +268,22 @@ void print_tcp_data(const char *buf, const int len) {
         }
     }
     cout << endl;
+}
+
+uint16_t checksum_TCP_sender(const char *buf, const int buflen, const PseudoHeaderTCP pseudo) {
+    uint32_t sum = 0;
+    uint16_t *u_buf = new uint16_t[kMaxPacketLen];
+    memset(u_buf, 0, kMaxPacketLen);
+
+    memcpy(u_buf, &pseudo, kTcpPseudoLength);
+    memcpy(u_buf+kTcpPseudoLength, buf, buflen);
+
+    for (int i = 0; i < int(kMaxPacketLen); i++){
+        sum += htons(u_buf[i]);
+    }
+    
+    memcpy(u_buf, &sum, 4);
+    uint16_t result = u_buf[0] + u_buf[1];
+    delete[] u_buf;
+    return ~result;
 }

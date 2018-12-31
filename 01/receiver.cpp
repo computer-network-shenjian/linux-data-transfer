@@ -5,7 +5,7 @@ using namespace std;
 int main() {
     int segment_id = allocate_shared_memory(kMaxPacketLen);
     if (segment_id == -1) { // shared memory allocation error
-        cout << "Shared memory allocation" << endl;
+        cerr << "Shared memory allocation" << endl;
         return SharedMemoryAllocation;
     }
 
