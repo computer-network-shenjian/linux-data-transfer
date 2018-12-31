@@ -1,8 +1,10 @@
-#include "sender.hpp"
 #include "../common/types.hpp"
 #include "../common/utils.hpp"
+#include "../common/parse_conf.hpp"
+#include "../common/application_layer.hpp"
+#include "../common/transport_layer.hpp"
+#include "../common/network_layer.hpp"
+#include "../common/datalink_layer.hpp"
+#include "../common/physical_layer.hpp"
 
-const CopyMode copy_mode = CopyMode::Shared;
-
-std::string fn_sender_log = "sender.log";
-
+const CopyMode kCopyMode = CopyMode::Shared;
